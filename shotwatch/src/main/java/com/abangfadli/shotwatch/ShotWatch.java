@@ -41,6 +41,6 @@ public class ShotWatch {
 
 
     public interface Listener {
-        void onScreenShotTaken(ScreenshotData screenshotData);
+        void onScreenShotTaken();
     }
 }

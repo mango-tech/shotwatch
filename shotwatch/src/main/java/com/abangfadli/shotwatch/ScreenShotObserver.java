@@ -47,7 +47,7 @@ public class ScreenShotObserver extends ContentObserver {
     public void onChange(boolean selfChange, Uri uri) {
         super.onChange(selfChange, uri);
         if (isSingleImageFile(uri)) {
-            handleItem(uri);
+            handleItem();
         }
     }
 
@@ -55,27 +55,13 @@ public class ScreenShotObserver extends ContentObserver {
         return uri.toString().matches(MEDIA_EXTERNAL_URI_STRING + "/[0-9]+");
     }
 
-    private void handleItem(Uri uri) {
-        Cursor cursor = null;
-        try {
-            cursor = mContentResolver.query(uri, PROJECTION, null, null, null);
-
-            if (cursor != null && cursor.moveToFirst()) {
-                final ScreenshotData screenshotData = generateScreenshotDataFromCursor(cursor);
-                if (screenshotData != null) {
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mListener.onScreenShotTaken(screenshotData);
-                        }
-                    });
-                }
+    private void handleItem() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                mListener.onScreenShotTaken();
             }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
+        });
     }
 
     private ScreenshotData generateScreenshotDataFromCursor(Cursor cursor) {
