@@ -11,20 +11,24 @@ import android.provider.MediaStore;
  */
 
 public class ShotWatch {
-    private final HandlerThread mHandlerThread;
+
+    private static class ShotwatchThreadSupport {
+        // Only have one thread like this
+        private static final HandlerThread shotwatchHandlerThread = new HandlerThread("ShotWatch");
+        static {
+            shotwatchHandlerThread.start();
+        }
+    }
+
     private final Handler mHandler;
     private final ContentResolver mContentResolver;
     private final ContentObserver mContentObserver;
-    private final Listener mListener;
 
     public ShotWatch(ContentResolver contentResolver, Listener listener) {
-        mHandlerThread = new HandlerThread("ShotWatch");
-        mHandlerThread.start();
 
-        mHandler = new Handler(mHandlerThread.getLooper());
+        mHandler = new Handler(ShotwatchThreadSupport.shotwatchHandlerThread.getLooper());
         mContentResolver = contentResolver;
-        mContentObserver = new ScreenShotObserver(mHandler, contentResolver, listener);
-        mListener = listener;
+        mContentObserver = new ScreenShotObserver(mHandler, listener);
     }
 
     public void register() {

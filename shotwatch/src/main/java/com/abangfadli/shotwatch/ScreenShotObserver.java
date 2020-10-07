@@ -1,6 +1,5 @@
 package com.abangfadli.shotwatch;
 
-import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -24,12 +23,12 @@ public class ScreenShotObserver extends ContentObserver {
     private final String FILE_NAME_PREFIX = "screenshot";
     private final String PATH_SCREENSHOT = "screenshots/";
 
-    private ContentResolver mContentResolver;
+    private final Handler mUiHandler;
     private final ShotWatch.Listener mListener;
 
-    public ScreenShotObserver(Handler handler, ContentResolver contentResolver, ShotWatch.Listener listener) {
+    public ScreenShotObserver(Handler handler, ShotWatch.Listener listener) {
         super(handler);
-        mContentResolver = contentResolver;
+        mUiHandler = new Handler(Looper.getMainLooper());
         mListener = listener;
     }
 
@@ -56,7 +55,7 @@ public class ScreenShotObserver extends ContentObserver {
     }
 
     private void handleItem() {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        mUiHandler.post(new Runnable() {
             @Override
             public void run() {
                 mListener.onScreenShotTaken();
